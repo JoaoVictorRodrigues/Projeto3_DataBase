@@ -12,10 +12,8 @@ function getAllAgricultores(callback) {
 function getAllAgricultoresNames(callback) {
     mongodb.connect(function(err,db) {
         db.collection("agricultores").find().toArray(callback);
-
     });
 }
-
 
 function getAgricultorById(id, callback) {
     mongodb.connect(function (err, db) {
@@ -29,8 +27,21 @@ function getPlanejamento(id,callback){
     });
 }
 
-
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorById, getAllAgricultores, getAllAgricultoresNames, getPlanejamento}
+
+function getAllCultivos(callback) {
+    mongodb.connect(function (err, db) {
+        db.collection("cultivos").find().toArray(callback);
+        console.log("teste do alê")
+    });
+}
+
+function getCultivoByName(callback) {
+    mongodb.connect(function (err, db) {
+      db.collection("cultivos").findOne({cultivo:require("mongodb").objectId(id)},callback);
+    });
+}
+
+module.exports = {disconnect, getAgricultorById, getAllAgricultores, getAllAgricultoresNames, getPlanejamento, getAllCultivos, getCultivoByName}
