@@ -3,7 +3,7 @@ var connection = null;
 var db = null;
 function connect(callback) {
     if (connection) return callback(null, db);
-    MongoClient.connect(process.env.MONGO_CONNECTION, function(err, conn){
+    MongoClient.connect(process.env.MONGO_CONNECTION,{ useNewUrlParser:true}, function(err, conn){
         if (err)
             return callback(err, null);
         else {
