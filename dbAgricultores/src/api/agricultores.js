@@ -2,29 +2,38 @@ module.exports = function (app, repository) {
     var bodyParser = require('body-parser');
     app.use(bodyParser.json());
 
-    app.get('/dbagricultores', function (req, res, next) {
-        repository.getAllAgricultores(function (err, agricultores) {
-            if (err) return next(err);
-            res.json(agricultores);
-        });
-    })
-
     app.get('/dbagricultores/info', function (req, res, next) {
         repository.getAllAgricultores(function (err, agricultores) {
             if (err) return next(err);
             var arrs = new Array();
             for (var i = 0; i < agricultores.length; i++) {
-                arrs.push({ "_id": agricultores[i]._id, "nome": agricultores[i].nome });
+                arrs.push({ "login": agricultores[i].login, "nome": agricultores[i].nome });
             }
             res.json(arrs);
         });
     })
 
-    app.post('/dbagricultores', function (req, res, next) {
-        repository.setNovoAgricultor(req.body.login, req.body.nome, req.body.contato, req.body.password, function (err, resposta) {
-            if (err) return (err);
-            res.json(resposta);
-        })
+    app.post('/dbagricultores/:login', function (req, res, next) {
+        if (req.body.login == req.params.login) {
+
+            repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
+                if (err) return next(err);
+                console.log(agricultores.length)
+                if (agricultores.length == 0){
+                    repository.setNovoAgricultor(req.body.login,req.body.nome,req.body.contato,req.body.password,function(err1,resposta){
+                        if (err1) return (err1);
+                        res.json(resposta);
+                    })
+                }
+                else {
+                    res.json({Erro:"Login já existe"})
+                }
+            });
+
+        }
+        else {
+            res.json({ Erro: "Login não condizente" });
+        }
     })
 
     app.post('/dbagricultores/login', function (req, res, next) {
@@ -38,18 +47,23 @@ module.exports = function (app, repository) {
                     if (resposta[i].password == req.body.password) {
                         res.json({ "Login": true, "key": 000 });
                     }
-                    
+
                 }
                 catch{ console.log("Try fail") }
             }
 
-            })
+        })
     })
 
-    app.get('/dbagricultores/:id', function (req, res, next) {
-        repository.getAgricultorById(req.params.id, function (err, agricultores) {
+    app.get('/dbagricultores/:login', function (req, res, next) {
+        repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err);
-            res.json(agricultores);
+            var resposta = new Array();
+            console.log("lenght = " + agricultores.length)
+            for (var i = 0; i < agricultores.length; i++) {
+                resposta.push({ "login": agricultores[i].login, "password": agricultores[i].password, "nome": agricultores[i].nome, "contato": agricultores[i].contato })
+            }
+            res.json(resposta);
         });
     })
 
