@@ -19,14 +19,14 @@ module.exports = function (app, repository) {
             repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
                 if (err) return next(err);
                 console.log(agricultores.length)
-                if (agricultores.length == 0){
-                    repository.setNovoAgricultor(req.body.login,req.body.nome,req.body.contato,req.body.password,function(err1,resposta){
+                if (agricultores.length == 0) {
+                    repository.setNovoAgricultor(req.body.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
                         if (err1) return (err1);
                         res.json(resposta);
                     })
                 }
                 else {
-                    res.json({Erro:"Login já existe"})
+                    res.json({ Erro: "Login já existe" })
                 }
             });
 
@@ -36,23 +36,28 @@ module.exports = function (app, repository) {
         }
     })
 
-    app.post('/dbagricultores/login', function (req, res, next) {
-        repository.getLoginAgricultor(req.body.login, function (err, resposta) {
-            if (err) return (err);
-            console.log("Entrou aqui, young")
-            console.log(resposta.length)
-            for (var i = 0; i < resposta.length; i++) {
-                console.log("Teste")
-                try {
-                    if (resposta[i].password == req.body.password) {
-                        res.json({ "Login": true, "key": 000 });
+    app.post('/dbagricultores/login/:login', function (req, res, next) {
+        if (req.params.login == req.body.login) {
+            repository.getLoginAgricultor(req.body.login, function (err, resposta) {
+                if (err) return (err);
+                console.log("Entrou aqui, young")
+                console.log(resposta.length)
+                for (var i = 0; i < resposta.length; i++) {
+                    console.log("Teste")
+                    try {
+                        if (resposta[i].password == req.body.password) {
+                            res.json({ "Login": true, "key": "000" });
+                        }
+
                     }
-
+                    catch{ console.log("Try fail") }
                 }
-                catch{ console.log("Try fail") }
-            }
 
-        })
+            })
+        }
+        else{
+            res.json({Erro:"Login não condizente"})
+        }
     })
 
     app.get('/dbagricultores/:login', function (req, res, next) {
