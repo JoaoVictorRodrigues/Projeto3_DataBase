@@ -80,6 +80,13 @@ module.exports = function (app, repository) {
         });
     })
 
+    app.get("/cultivos", function (req, res, next) {
+      repository.getAllCultivos(function (err, cultivos) {
+          if (err) return next(err);
+          res.json(cultivos);
+      });
+    })
+
     app.patch('/dbagricultores/:login/update',function(req,res,next){
         repository.getAgricultorByLogin(req.params.login,function(err,agricultores){
             if(err) return next(err)
