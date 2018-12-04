@@ -100,10 +100,24 @@ module.exports = function (app, repository) {
         });
     })
 
-    app.get("/variedades/:alimento",function(req,res,next){
-        repository.getCultivoByName(req.params.alimento, function(err,cultivos){
+    app.get("/variedades/:alimento", function (req, res, next) {
+        repository.getCultivoByName(req.params.alimento, function (err, cultivos) {
             if (err) return next(err);
             res.json(cultivos);
+        })
+    })
+
+    app.post("/variedades/:alimento", function (req, res, next) {
+        repository.addAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheita_em, req.body.Classificacao_nutricional, function (err, resposta) {
+            if (err) return (err);
+            res.json(resposta);
+        })
+    })
+
+    app.patch("/variedades/:alimento", function (req, res, next) {
+        repository.editAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheita_em, req.body.Classificacao_nutricional, function (err, resposta) {
+            if (err) return (err);
+            res.json(resposta);
         })
     })
 
