@@ -57,8 +57,21 @@ function changeInfoByLogin(_login,_password,_nome,_contato,callback) {
     })
 }
 
+function addAlimento(_cultivo,_muda_ou_semente,_dias_no_canteiro,_iniciar_colheita_em,_finalizar_colheitas_em,_Classificacao_nutricional,callback){
+    mongodb.connect(function(err, db){
+        db.collection("cultivos").insertOne({cultivo:_cultivo,muda_ou_semente:_muda_ou_semente,dias_no_canteiro:_dias_no_canteiro,iniciar_colheita_em:_iniciar_colheita_em,finalizar_colheitas_em:_finalizar_colheitas_em,Classificacao_nutricional:_Classificacao_nutricional}, callback)
+    })
+}
+
+function editAlimento(_cultivo,_muda_ou_semente,_dias_no_canteiro,_iniciar_colheita_em,_finalizar_colheitas_em,_Classificacao_nutricional,callback){
+    mongodb.connect(function(err, db){
+        db.collection("cultivos").updateOne({cultivo:_cultivo},{$set:{muda_ou_semente:_muda_ou_semente,dias_no_canteiro:_dias_no_canteiro,iniciar_colheita_em:_iniciar_colheita_em,finalizar_colheitas_em:_finalizar_colheitas_em,Classificacao_nutricional:_Classificacao_nutricional}}, callback)
+    })
+}
+
+
 
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos}
+module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento}
