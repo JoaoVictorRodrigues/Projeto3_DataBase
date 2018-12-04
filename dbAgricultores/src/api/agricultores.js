@@ -56,7 +56,7 @@ module.exports = function (app, repository) {
             })
         }
         else {
-            res.json({ Erro: "Login não condizente" })
+            res.json({ "Erro 403": "Login não bate com o enviado" })
         }
     })
 
@@ -128,14 +128,22 @@ module.exports = function (app, repository) {
         })
     })
     app.get("/dbagricultores/planejamento/:id",function(req,res,next){
+        console.log("testando testes")
         repository.planejamentoById(req.params.id,function(err,planejamentos){
             if (err) return (err);
-            res.jason(resposta);
+            res.json(planejamentos);
         })
     })
 
     app.post("/dbagricultores/planejamento/:login",function(req,res,next){
         repository.novoPlanejamento(req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
+            if (err) return(err);
+            res.json(resposta);
+        })
+    })
+
+    app.patch("/dbagricultores/planejamento/:login/:id",function(req,res,next){
+        repository.alteraPlanejamento(req.params.id,req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
             if (err) return(err);
             res.json(resposta);
         })
