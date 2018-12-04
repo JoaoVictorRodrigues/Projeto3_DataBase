@@ -55,8 +55,8 @@ module.exports = function (app, repository) {
 
             })
         }
-        else{
-            res.json({Erro:"Login não condizente"})
+        else {
+            res.json({ Erro: "Login não condizente" })
         }
     })
 
@@ -80,12 +80,12 @@ module.exports = function (app, repository) {
         });
     })
 
-    app.patch('/dbagricultores/:login/update',function(req,res,next){
-        repository.getAgricultorByLogin(req.params.login,function(err,agricultores){
-            if(err) return next(err)
-            if(agricultores.length>0){
-                console.log("tem usuario: "+agricultores.length)
-                repository.changeInfoByLogin(req.body.login,req.body.password,req.body.nome,req.body.contato,function(err1,mudanca){
+    app.patch('/dbagricultores/:login/update', function (req, res, next) {
+        repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
+            if (err) return next(err)
+            if (agricultores.length > 0) {
+                console.log("tem usuario: " + agricultores.length)
+                repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
                     if (err1) return next(err1)
                     res.json(mudanca)
                 })
@@ -93,5 +93,18 @@ module.exports = function (app, repository) {
         })
     })
 
+    app.get("/variedades", function (req, res, next) {
+        repository.getAllCultivos(function (err, cultivos) {
+            if (err) return next(err);
+            res.json(cultivos);
+        });
+    })
+
+    app.get("/variedades/:alimento",function(req,res,next){
+        repository.getCultivoByName(req.params.alimento, function(err,cultivos){
+            if (err) return next(err);
+            res.json(cultivos);
+        })
+    })
 
 }

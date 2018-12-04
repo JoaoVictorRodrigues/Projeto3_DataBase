@@ -17,6 +17,18 @@ function setNovoAgricultor(_login,_nome,_contato,_password,callback) {
 
     })
 }
+function getAllCultivos(callback) {
+    mongodb.connect(function (err, db) {
+        db.collection("cultivos").find().toArray(callback);
+        console.log("teste do alê")
+    });
+}
+
+function getCultivoByName(_cultivo, callback) {
+    mongodb.connect(function (err, db) {
+      db.collection("cultivos").findOne({cultivo:_cultivo},callback);
+    });
+}
 
 
 function getAgricultorByLogin(_login, callback) {
@@ -49,4 +61,4 @@ function changeInfoByLogin(_login,_password,_nome,_contato,callback) {
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin}
+module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos}
