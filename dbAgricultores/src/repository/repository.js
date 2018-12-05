@@ -37,13 +37,6 @@ function getAgricultorByLogin(_login, callback) {
     });
 }
 
-function getPlanejamento(id,callback){
-    mongodb.connect(function(err,db) {
-        console.log("HUE")
-        db.collection("planejamento").findOne({id_agricultor:require("mongodb").ObjectId(id)},callback);
-    });
-}
-
 function getLoginAgricultor(_login,callback){
     mongodb.connect(function(err,db){
         db.collection("agricultores").find({login:_login}).toArray(callback)
@@ -81,9 +74,35 @@ function tokenValidate(_login, token){
   return bcrypt.compareSync(_login.concat(_password), hash);
 }
 
+function planejamentosAgricultor(_login,callback){
+    mongodb.connect(function(err, db){
+        db.collection("planejamento").find({loginAgricultor:_login}).toArray(callback)
+    })
+}
+function planejamentoById(id,callback){
+    console.log("oito oito")
+    mongodb.connect(function(err,db){
+        console.log("nove nove")
+        db.collection("planejamento").find({_id:require("mongodb").ObjectID(id)}).toArray(callback);
+    })
+}
+
+function novoPlanejamento(_loginAgricultor,_nomeCultivo,_canteiros,_dataSemeadura,_quantPlanejada,_unidadePlanejada,_quantPlantada,_unidadePlantada,_quantSobreviveu,_unidadeSobreviveu,_emAndamento,callback){
+    mongodb.connect(function(err, db){
+        db.collection("planejamento").insertOne({loginAgricultor:_loginAgricultor,nomeCultivo:_nomeCultivo,canteiros:_canteiros,dataSemeadura:_dataSemeadura,quantPlanejada:_quantPlanejada,unidadePlanejada:_unidadePlanejada,quantPlantada:_quantPlantada,unidadePlantada:_unidadePlantada,quantSobreviveu:_quantSobreviveu,unidadeSobreviveu:_unidadeSobreviveu,emAndamento:_emAndamento},callback);
+    })
+}
+
+function alteraPlanejamento(id,_loginAgricultor,_nomeCultivo,_canteiros,_dataSemeadura,_quantPlanejada,_unidadePlanejada,_quantPlantada,_unidadePlantada,_quantSobreviveu,_unidadeSobreviveu,_emAndamento,callback){
+    mongodb.connect(function(err, db){
+        console.log("oi")
+        db.collection("planejamento").updateOne({_id:require("mongodb").ObjectID(id),loginAgricultor:_loginAgricultor},{$set:{nomeCultivo:_nomeCultivo,canteiros:_canteiros,dataSemeadura:_dataSemeadura,quantPlanejada:_quantPlanejada,unidadePlanejada:_unidadePlanejada,quantPlantada:_quantPlantada,unidadePlantada:_unidadePlantada,quantSobreviveu:_quantSobreviveu,unidadeSobreviveu:_unidadeSobreviveu,emAndamento:_emAndamento}},callback);
+    })
+}
 
 
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento, tokenGenerate}
+
+module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento, planejamentosAgricultor,novoPlanejamento, planejamentoById, alteraPlanejamento, tokenGenerate, tokenValidate}

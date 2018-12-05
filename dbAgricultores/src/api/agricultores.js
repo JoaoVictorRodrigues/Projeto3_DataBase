@@ -62,7 +62,7 @@ module.exports = function (app, repository) {
             })
         }
         else {
-            res.json({ Erro: "Login não condizente" })
+            res.json({ "Erro 403": "Login não bate com o enviado" })
         }
     })
 
@@ -119,15 +119,43 @@ module.exports = function (app, repository) {
     })
 
     app.post("/variedades/:alimento", function (req, res, next) {
-        repository.addAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheita_em, req.body.Classificacao_nutricional, function (err, resposta) {
+        repository.addAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheitas_em, req.body.Classificacao_nutricional, function (err, resposta) {
             if (err) return (err);
             res.json(resposta);
         })
     })
 
     app.patch("/variedades/:alimento", function (req, res, next) {
-        repository.editAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheita_em, req.body.Classificacao_nutricional, function (err, resposta) {
+        repository.editAlimento(req.body.cultivo, req.body.muda_ou_semente, req.body.dias_no_canteiro, req.body.iniciar_colheita_em, req.body.finalizar_colheitas_em, req.body.Classificacao_nutricional, function (err, resposta) {
             if (err) return (err);
+            res.json(resposta);
+        })
+    })
+
+    app.get("/dbagricultores/:login/planejamentos",function(req,res,next){
+        repository.planejamentosAgricultor(req.params.login,function(err,planejamentos){
+            if (err) return(err);
+            res.json(planejamentos);
+        })
+    })
+    app.get("/dbagricultores/planejamento/:id",function(req,res,next){
+        console.log("testando testes")
+        repository.planejamentoById(req.params.id,function(err,planejamentos){
+            if (err) return (err);
+            res.json(planejamentos);
+        })
+    })
+
+    app.post("/dbagricultores/planejamento/:login",function(req,res,next){
+        repository.novoPlanejamento(req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
+            if (err) return(err);
+            res.json(resposta);
+        })
+    })
+
+    app.patch("/dbagricultores/planejamento/:login/:id",function(req,res,next){
+        repository.alteraPlanejamento(req.params.id,req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
+            if (err) return(err);
             res.json(resposta);
         })
     })
