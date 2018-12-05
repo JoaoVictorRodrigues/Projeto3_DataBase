@@ -40,15 +40,18 @@ module.exports = function (app, repository) {
                   else {
                       console.log('Login já existe')
                       res.status(409)
+                      res.json({})
                   }
 
                 }else{
                   console.log("token invalido")
                   res.status(403)
+                  res.json({})
                 }
               }
             }else{
               res.status(404)
+              res.json({})
             }
         });
     })
@@ -67,6 +70,7 @@ module.exports = function (app, repository) {
                   }else{
                     console.log("Senha não bate")
                     res.status(403)
+                    res.json({})
                   }
               }
               catch(err){ console.log(err) }
@@ -85,6 +89,7 @@ module.exports = function (app, repository) {
             }else{
               console.log('Nenhum usuário com o login provido encontrado')
               res.status(404)
+              res.json({})
             }
         });
     })
@@ -107,6 +112,7 @@ module.exports = function (app, repository) {
                 if (token === undefined){
                   console.log("Nenhum token provido, quitando")
                   res.status(401);
+                  res.json({})
                 }else{
                   console.log("Token encontrado, conferindo...")
 
@@ -120,10 +126,12 @@ module.exports = function (app, repository) {
                   }else{
                     console.log("token invalido")
                     res.status(403)
+                    res.json({})
                   }
                 }
             }else{
               res.status(404);
+              res.json({})
             }
         })
     })
@@ -180,6 +188,7 @@ module.exports = function (app, repository) {
                 if (token === undefined){
                   console.log("Nenhum token provido, quitando")
                   res.status(401);
+                  res.json({})
                 }else{
                   console.log("Token encontrado, conferindo...")
 
@@ -193,10 +202,12 @@ module.exports = function (app, repository) {
                   }else{
                     console.log("token invalido")
                     res.status(403)
+                    res.json({})
                   }
                 }
             }else{
               res.status(404);
+              res.json({})
             }
         })
     })
@@ -211,6 +222,7 @@ module.exports = function (app, repository) {
               if (token === undefined){
                 console.log("Nenhum token provido, quitando")
                 res.status(401);
+                res.json({})
               }else{
                 console.log("Token encontrado, conferindo...")
 
@@ -224,10 +236,12 @@ module.exports = function (app, repository) {
                 }else{
                   console.log("token invalido")
                   res.status(403)
+                  res.json({})
                 }
               }
           }else{
             res.status(404);
+            res.json({})
           }
       })
     })
