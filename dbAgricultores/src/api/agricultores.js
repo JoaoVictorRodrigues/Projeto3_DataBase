@@ -1,3 +1,6 @@
+//Confirmar que é aqui que eu coloco
+//const jwt= require('jsonwebtoken')
+
 module.exports = function (app, repository) {
     var bodyParser = require('body-parser');
     app.use(bodyParser.json());
@@ -40,17 +43,18 @@ module.exports = function (app, repository) {
         if (req.params.login == req.body.login) {
             repository.getLoginAgricultor(req.body.login, function (err, resposta) {
                 if (err) return (err);
-                console.log("Entrou aqui, young")
                 console.log(resposta.length)
                 for (var i = 0; i < resposta.length; i++) {
-                    console.log("Teste")
 
+                    try {
                         if (resposta[i].password == req.body.password) {
-                            res.json({ "Login": true, "key": "000" });
+                            //Acho que dentro deste if devo prover meu token
+                            let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
+                            res.json({ "token": token});
                         }
 
-
-
+                    }
+                    catch(err){ console.log(err) }
                 }
 
             })
@@ -82,15 +86,33 @@ module.exports = function (app, repository) {
         });
     })
 
-    app.patch('/dbagricultores/:login/update', function (req, res, next) {
+    app.patch('/dbagricultores/:login', function (req, res, next) {
         repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err)
             if (agricultores.length > 0) {
-                console.log("tem usuario: " + agricultores.length)
-                repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
-                    if (err1) return next(err1)
-                    res.json(mudanca)
-                })
+                //Suponho que este seja um método que precisaria de autenticação por token
+                let token= getToken(req);
+
+                if (token === undefined){
+                  console.log("Nenhum token provido, quitando")
+                  res.status(401);
+                }else{
+                  console.log("Token encontrado, conferindo...")
+
+                  if (repository.tokenValidate(agricultores[0].login, agricultores[0].password, token)){
+                    console.log("token válido")
+
+                    repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
+                        if (err1) return next(err1)
+                        res.json(mudanca)
+                    })
+                  }else{
+                    console.log("token invalido")
+                    res.status(403)
+                  }
+                }
+            }else{
+              res.status(404);
             }
         })
     })

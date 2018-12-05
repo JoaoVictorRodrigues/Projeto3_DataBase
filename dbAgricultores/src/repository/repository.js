@@ -1,5 +1,5 @@
 const mongodb = require("../config/mongodb");
-
+const bcrypt= require('bcrypt')
 
 
 function getAllAgricultores(callback) {
@@ -40,7 +40,7 @@ function getAgricultorByLogin(_login, callback) {
 function getLoginAgricultor(_login,callback){
     mongodb.connect(function(err,db){
         db.collection("agricultores").find({login:_login}).toArray(callback)
-        
+
     })
 }
 
@@ -60,6 +60,16 @@ function editAlimento(_cultivo,_muda_ou_semente,_dias_no_canteiro,_iniciar_colhe
     mongodb.connect(function(err, db){
         db.collection("cultivos").updateOne({cultivo:_cultivo},{$set:{muda_ou_semente:_muda_ou_semente,dias_no_canteiro:_dias_no_canteiro,iniciar_colheita_em:_iniciar_colheita_em,finalizar_colheitas_em:_finalizar_colheitas_em,Classificacao_nutricional:_Classificacao_nutricional}}, callback)
     })
+}
+
+function tokenGenerate(_login, _password){
+  //10 rounds de salting parece ser o default, é o que vou usar
+  return bcrypt.hashSync(_login.concat(_password), 10);
+}
+
+function tokenValidate(_login, _password, token){
+
+  return bcrypt.compareSync(_login.concat(_password), token);
 }
 
 function planejamentosAgricultor(_login,callback){
@@ -92,4 +102,5 @@ function alteraPlanejamento(id,_loginAgricultor,_nomeCultivo,_canteiros,_dataSem
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento, planejamentosAgricultor,novoPlanejamento, planejamentoById, alteraPlanejamento}
+
+module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento, planejamentosAgricultor,novoPlanejamento, planejamentoById, alteraPlanejamento, tokenGenerate, tokenValidate}
