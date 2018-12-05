@@ -62,18 +62,35 @@ module.exports = function (app, repository) {
     })
 
     app.get('/dbagricultores/:login', function (req, res, next) {
-        repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
-            if (err) return next(err);
+      //Requer Token
+      repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
+          if (err) return next(err)
+          if (agricultores.length > 0) {
+              let token= getToken(req);
 
-            if (agricultores.length>= 1){
-                delete agricultores[0]['_id']
-                res.json(agricultores[0])
-            }else{
-              console.log('Nenhum usuário com o login provido encontrado')
-              res.status(404)
-              res.json({})
-            }
-        });
+              if (token === undefined){
+                console.log("Nenhum token provido, quitando")
+                res.status(401);
+                res.json({})
+              }else{
+                console.log("Token encontrado, conferindo...")
+
+                if (repository.tokenValidate(agricultores[0].login, agricultores[0].password, token)){
+                  console.log("token válido")
+
+                  delete agricultores[0]['_id']
+                  res.json(agricultores[0])
+                }else{
+                  console.log("token invalido")
+                  res.status(403)
+                  res.json({})
+                }
+              }
+          }else{
+            res.status(404);
+            res.json({})
+          }
+      })
     })
 
     app.get('/planejamento/:id', function (req, res, next) {
