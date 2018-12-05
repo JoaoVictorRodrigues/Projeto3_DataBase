@@ -67,11 +67,9 @@ function tokenGenerate(_login, _password){
   return bcrypt.hashSync(_login.concat(_password), 10);
 }
 
-function tokenValidate(_login, token){
-  //TODO pegar os dados do mongodb, hashear os dados, ver se bate com o token
+function tokenValidate(_login, _password, token){
 
-  //vendo se bate
-  return bcrypt.compareSync(_login.concat(_password), hash);
+  return bcrypt.compareSync(_login.concat(_password), token);
 }
 
 function planejamentosAgricultor(_login,callback){
