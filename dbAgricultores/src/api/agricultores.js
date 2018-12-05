@@ -17,18 +17,32 @@ module.exports = function (app, repository) {
     })
 
     app.post('/dbagricultores/:login', function (req, res, next) {
+        //Requer token
         repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err);
-            console.log(agricultores.length)
-            if (agricultores.length == 0) {
-                repository.setNovoAgricultor(req.params.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
-                    if (err1) return (err1);
-                    res.json(resposta);
-                })
-            }
-            else {
-                console.log('Login já existe')
-                res.status(409)
+            if (token === undefined){
+              console.log("Nenhum token provido, quitando")
+              res.status(401);
+            }else{
+              console.log("Token encontrado, conferindo...")
+              if (repository.tokenValidate(agricultores[0].login, agricultores[0].password, token)){
+                console.log("token válido")
+
+                if (agricultores.length == 0) {
+                    repository.setNovoAgricultor(req.params.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
+                        if (err1) return (err1);
+                        res.json(resposta);
+                    })
+                }
+                else {
+                    console.log('Login já existe')
+                    res.status(409)
+                }
+
+              }else{
+                console.log("token invalido")
+                res.status(403)
+              }
             }
         });
     })
@@ -81,10 +95,10 @@ module.exports = function (app, repository) {
     })
 
     app.patch('/dbagricultores/:login', function (req, res, next) {
+        //Requer Token
         repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err)
             if (agricultores.length > 0) {
-                //Suponho que este seja um método que precisaria de autenticação por token
                 let token= getToken(req);
 
                 if (token === undefined){
