@@ -175,10 +175,34 @@ module.exports = function (app, repository) {
     })
 
     app.patch("/dbagricultores/planejamento/:login/:id",function(req,res,next){
-        repository.alteraPlanejamento(req.params.id,req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
-            if (err) return(err);
-            res.json(resposta);
-        })
+      //Requer token
+      repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
+          if (err) return next(err)
+          if (agricultores.length > 0) {
+              let token= getToken(req);
+
+              if (token === undefined){
+                console.log("Nenhum token provido, quitando")
+                res.status(401);
+              }else{
+                console.log("Token encontrado, conferindo...")
+
+                if (repository.tokenValidate(agricultores[0].login, agricultores[0].password, token)){
+                  console.log("token válido")
+
+                  repository.alteraPlanejamento(req.params.id,req.params.login,req.body.nomeCultivo,req.body.canteiros,req.body.dataSemeadura,req.body.quantPlanejada,req.body.unidadePlanejada,req.body.quantPlantada,req.body.unidadePlantada,req.body.quantSobreviveu,req.body.unidadeSobreviveu,req.body.emAndamento,function(err,resposta){
+                      if (err) return(err);
+                      res.json(resposta);
+                  })
+                }else{
+                  console.log("token invalido")
+                  res.status(403)
+                }
+              }
+          }else{
+            res.status(404);
+          }
+      })
     })
 
 }
