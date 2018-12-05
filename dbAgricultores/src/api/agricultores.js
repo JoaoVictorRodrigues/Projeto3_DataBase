@@ -108,6 +108,7 @@ module.exports = function (app, repository) {
                   }
                 }
             }else{
+              res.status(404);
             }
         })
     })
