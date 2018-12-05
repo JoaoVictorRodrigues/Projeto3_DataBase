@@ -194,6 +194,17 @@ module.exports = function (app, repository) {
         })
     })
 
+    function getToken(req){
+      if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        return req.headers.authorization.split(' ')[1];
+      } else if (req.query && req.query.token) {
+        return req.query.token;
+      }else{
+        return req.body.token || req.headers['x-access-token'];
+      }
+    }
+
+
     app.patch("/dbagricultores/planejamento/:login/:id",function(req,res,next){
       //Requer token
       repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
