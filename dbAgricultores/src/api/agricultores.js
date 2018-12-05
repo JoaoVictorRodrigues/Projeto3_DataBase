@@ -48,26 +48,25 @@ module.exports = function (app, repository) {
     })
 
     app.post('/dbagricultores/login/:login', function (req, res, next) {
-            repository.getLoginAgricultor(req.params.login, function (err, resposta) {
-                if (err) return (err);
-                console.log(resposta.length)
-                for (var i = 0; i < resposta.length; i++) {
+      repository.getLoginAgricultor(req.params.login, function (err, resposta) {
+          if (err) return (err);
+          console.log(resposta.length)
+          for (var i = 0; i < resposta.length; i++) {
 
-                    try {
-                        if (resposta[i].password == req.body.password) {
-                            //Acho que dentro deste if devo prover meu token
-                            let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
-                            res.json({ "token": token});
-                        }else{
-                          console.log("Senha não bate")
-                          res.status(403)
-                        }
-                    }
-                    catch(err){ console.log(err) }
-                }
+              try {
+                  if (resposta[i].password == req.body.password) {
+                      //Acho que dentro deste if devo prover meu token
+                      let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
+                      res.json({ "token": token});
+                  }else{
+                    console.log("Senha não bate")
+                    res.status(403)
+                  }
+              }
+              catch(err){ console.log(err) }
+          }
 
-            })
-        }
+      })
     })
 
     app.get('/dbagricultores/:login', function (req, res, next) {
