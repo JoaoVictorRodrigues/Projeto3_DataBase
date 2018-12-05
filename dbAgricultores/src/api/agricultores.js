@@ -17,26 +17,20 @@ module.exports = function (app, repository) {
     })
 
     app.post('/dbagricultores/:login', function (req, res, next) {
-        if (req.body.login == req.params.login) {
-
             repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
                 if (err) return next(err);
                 console.log(agricultores.length)
                 if (agricultores.length == 0) {
-                    repository.setNovoAgricultor(req.body.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
+                    repository.setNovoAgricultor(req.params.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
                         if (err1) return (err1);
                         res.json(resposta);
                     })
                 }
                 else {
-                    res.json({ Erro: "Login já existe" })
+                    console.log('Login já existe')
+                    res.status(409)
                 }
             });
-
-        }
-        else {
-            res.json({ Erro: "Login não condizente" });
-        }
     })
 
     app.post('/dbagricultores/login/:login', function (req, res, next) {
