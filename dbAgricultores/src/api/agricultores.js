@@ -81,7 +81,7 @@ module.exports = function (app, repository) {
                 res.json(agricultores[0])
             }else{
               console.log('Nenhum usuário com o login provido encontrado')
-
+              res.status(404)
             }
         });
     })
