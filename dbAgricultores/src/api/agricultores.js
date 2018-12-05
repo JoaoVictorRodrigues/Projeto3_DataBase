@@ -17,20 +17,20 @@ module.exports = function (app, repository) {
     })
 
     app.post('/dbagricultores/:login', function (req, res, next) {
-            repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
-                if (err) return next(err);
-                console.log(agricultores.length)
-                if (agricultores.length == 0) {
-                    repository.setNovoAgricultor(req.params.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
-                        if (err1) return (err1);
-                        res.json(resposta);
-                    })
-                }
-                else {
-                    console.log('Login já existe')
-                    res.status(409)
-                }
-            });
+        repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
+            if (err) return next(err);
+            console.log(agricultores.length)
+            if (agricultores.length == 0) {
+                repository.setNovoAgricultor(req.params.login, req.body.nome, req.body.contato, req.body.password, function (err1, resposta) {
+                    if (err1) return (err1);
+                    res.json(resposta);
+                })
+            }
+            else {
+                console.log('Login já existe')
+                res.status(409)
+            }
+        });
     })
 
     app.post('/dbagricultores/login/:login', function (req, res, next) {
