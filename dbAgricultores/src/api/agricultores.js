@@ -60,20 +60,26 @@ module.exports = function (app, repository) {
       repository.getLoginAgricultor(req.params.login, function (err, resposta) {
           if (err) return (err);
           console.log(resposta.length)
-          for (var i = 0; i < resposta.length; i++) {
+          if (resposta.length >=1){
+            for (var i = 0; i < resposta.length; i++) {
 
-              try {
-                  if (resposta[i].password == req.body.password) {
-                      //Acho que dentro deste if devo prover meu token
-                      let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
-                      res.json({ "token": token});
-                  }else{
-                    console.log("Senha não bate")
-                    res.status(403)
-                    res.json({})
-                  }
-              }
-              catch(err){ console.log(err) }
+                try {
+                    if (resposta[i].password == req.body.password) {
+                        //Acho que dentro deste if devo prover meu token
+                        let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
+                        res.json({ "token": token});
+                    }else{
+                      console.log("Senha não bate")
+                      res.status(403)
+                      res.json({})
+                    }
+                }
+                catch(err){ console.log(err) }
+            }
+          }else{
+            console.log("Usuário não encontrado")
+            res.status(404)
+            res.json({})
           }
 
       })
