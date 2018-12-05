@@ -93,6 +93,7 @@ module.exports = function (app, repository) {
 
                 if (token === undefined){
                   console.log("Nenhum token provido, quitando")
+                  res.status(401);
                 }else{
                   console.log("Token encontrado, conferindo...")
 
