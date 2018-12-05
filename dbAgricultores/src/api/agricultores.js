@@ -48,8 +48,7 @@ module.exports = function (app, repository) {
     })
 
     app.post('/dbagricultores/login/:login', function (req, res, next) {
-        if (req.params.login == req.body.login) {
-            repository.getLoginAgricultor(req.body.login, function (err, resposta) {
+            repository.getLoginAgricultor(req.params.login, function (err, resposta) {
                 if (err) return (err);
                 console.log(resposta.length)
                 for (var i = 0; i < resposta.length; i++) {
@@ -59,16 +58,15 @@ module.exports = function (app, repository) {
                             //Acho que dentro deste if devo prover meu token
                             let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
                             res.json({ "token": token});
+                        }else{
+                          console.log("Senha não bate")
+                          res.status(403)
                         }
-
                     }
                     catch(err){ console.log(err) }
                 }
 
             })
-        }
-        else {
-            res.json({ "Erro 403": "Login não bate com o enviado" })
         }
     })
 
