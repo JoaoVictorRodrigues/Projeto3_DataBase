@@ -105,6 +105,7 @@ module.exports = function (app, repository) {
                     })
                   }else{
                     console.log("token invalido")
+                    res.status(403)
                   }
                 }
             }else{
