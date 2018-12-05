@@ -44,12 +44,12 @@ module.exports = function (app, repository) {
                 console.log(resposta.length)
                 for (var i = 0; i < resposta.length; i++) {
                     console.log("Teste")
-                
+
                         if (resposta[i].password == req.body.password) {
                             res.json({ "Login": true, "key": "000" });
                         }
 
-                    
+
 
                 }
 
@@ -63,12 +63,14 @@ module.exports = function (app, repository) {
     app.get('/dbagricultores/:login', function (req, res, next) {
         repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err);
-            var resposta = new Array();
-            console.log("lenght = " + agricultores.length)
-            for (var i = 0; i < agricultores.length; i++) {
-                resposta.push({ "login": agricultores[i].login, "password": agricultores[i].password, "nome": agricultores[i].nome, "contato": agricultores[i].contato })
+
+            if (agricultores.length>= 1){
+                delete agricultores[0]['_id']
+                res.json(agricultores[0])
+            }else{
+              console.log('Nenhum usuário com o login provido encontrado')
+
             }
-            res.json(resposta);
         });
     })
 
