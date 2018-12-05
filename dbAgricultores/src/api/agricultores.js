@@ -1,3 +1,6 @@
+//Confirmar que é aqui que eu coloco
+//const jwt= require('jsonwebtoken')
+
 module.exports = function (app, repository) {
     var bodyParser = require('body-parser');
     app.use(bodyParser.json());
@@ -40,17 +43,20 @@ module.exports = function (app, repository) {
         if (req.params.login == req.body.login) {
             repository.getLoginAgricultor(req.body.login, function (err, resposta) {
                 if (err) return (err);
-                console.log("Entrou aqui, young")
                 console.log(resposta.length)
                 for (var i = 0; i < resposta.length; i++) {
-                    console.log("Teste")
+
                     try {
                         if (resposta[i].password == req.body.password) {
-                            res.json({ "Login": true, "key": "000" });
+                            //Acho que dentro deste it devo prover meu token
+                            //Não esquecer de dar o npm install
+                            const payload= { "user": resposta[i].login};
+                            let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
+                            res.json({ "token": token});
                         }
 
                     }
-                    catch{ console.log("Try fail") }
+                    catch(err){ console.log(err) }
                 }
 
             })
@@ -85,6 +91,11 @@ module.exports = function (app, repository) {
             if (err) return next(err)
             if (agricultores.length > 0) {
                 console.log("tem usuario: " + agricultores.length)
+                //Suponho que este seja um método que precisaria de autenticação por token
+                //let token= req.body.token || req.query.token || req.headers['x-access-token'];
+
+                //print("Fazer meus testes aqui")
+                //print(agricultores)
                 repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
                     if (err1) return next(err1)
                     res.json(mudanca)

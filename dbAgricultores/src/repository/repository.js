@@ -1,5 +1,5 @@
 const mongodb = require("../config/mongodb");
-
+const bcrypt= require('bcrypt')
 
 
 function getAllAgricultores(callback) {
@@ -47,7 +47,7 @@ function getPlanejamento(id,callback){
 function getLoginAgricultor(_login,callback){
     mongodb.connect(function(err,db){
         db.collection("agricultores").find({login:_login}).toArray(callback)
-        
+
     })
 }
 
@@ -69,9 +69,21 @@ function editAlimento(_cultivo,_muda_ou_semente,_dias_no_canteiro,_iniciar_colhe
     })
 }
 
+function tokenGenerate(_login, _password){
+  //10 rounds de salting parece ser o default, é o que vou usar
+  return bcrypt.hashSync(_login.concat(_password), 10);
+}
+
+function tokenValidate(_login, token){
+  //TODO pegar os dados do mongodb, hashear os dados, ver se bate com o token
+
+  //vendo se bate
+  return bcrypt.compareSync(_login.concat(_password), hash);
+}
+
 
 
 function disconnect() {
     return mongodb.disconnect();
 }
-module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento}
+module.exports = {disconnect, getAgricultorByLogin, getAllAgricultores, getPlanejamento,setNovoAgricultor,getLoginAgricultor,changeInfoByLogin,getCultivoByName, getAllCultivos, addAlimento, editAlimento, tokenGenerate}
