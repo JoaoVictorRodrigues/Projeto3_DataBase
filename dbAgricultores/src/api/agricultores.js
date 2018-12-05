@@ -48,9 +48,7 @@ module.exports = function (app, repository) {
 
                     try {
                         if (resposta[i].password == req.body.password) {
-                            //Acho que dentro deste it devo prover meu token
-                            //Não esquecer de dar o npm install
-                            const payload= { "user": resposta[i].login};
+                            //Acho que dentro deste if devo prover meu token
                             let token= repository.tokenGenerate(resposta[i].login, resposta[i].password);
                             res.json({ "token": token});
                         }
@@ -86,20 +84,30 @@ module.exports = function (app, repository) {
         });
     })
 
-    app.patch('/dbagricultores/:login/update', function (req, res, next) {
+    app.patch('/dbagricultores/:login', function (req, res, next) {
         repository.getAgricultorByLogin(req.params.login, function (err, agricultores) {
             if (err) return next(err)
             if (agricultores.length > 0) {
-                console.log("tem usuario: " + agricultores.length)
                 //Suponho que este seja um método que precisaria de autenticação por token
-                //let token= req.body.token || req.query.token || req.headers['x-access-token'];
+                let token= getToken(req);
 
-                //print("Fazer meus testes aqui")
-                //print(agricultores)
-                repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
-                    if (err1) return next(err1)
-                    res.json(mudanca)
-                })
+                if (token === undefined){
+                  console.log("Nenhum token provido, quitando")
+                }else{
+                  console.log("Token encontrado, conferindo...")
+
+                  if (repository.tokenValidate(agricultores[0].login, agricultores[0].password, token)){
+                    console.log("token válido")
+
+                    repository.changeInfoByLogin(req.body.login, req.body.password, req.body.nome, req.body.contato, function (err1, mudanca) {
+                        if (err1) return next(err1)
+                        res.json(mudanca)
+                    })
+                  }else{
+                    console.log("token invalido")
+                  }
+                }
+            }else{
             }
         })
     })
@@ -159,5 +167,15 @@ module.exports = function (app, repository) {
             res.json(resposta);
         })
     })
+
+    function getToken(req){
+      if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        return req.headers.authorization.split(' ')[1];
+      } else if (req.query && req.query.token) {
+        return req.query.token;
+      }else{
+        return req.body.token || req.headers['x-access-token'];
+      }
+    }
 
 }
